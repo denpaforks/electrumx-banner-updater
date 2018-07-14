@@ -17,11 +17,17 @@ BANNER=~/.electrumx/banner
 # specify path to electrumx_rpc.py
 ELECTRUMX_RPC=/usr/local/bin/electrumx_rpc
 
-# specify path to tor
-# TOR=/usr/sbin/tor
-
 # specify electrumx RPC port
 RPC_PORT=8000
+
+# specify path to tor
+TOR=
+
+# location of config file
+CONFIG=/etc/update-electrumx-banner.conf
+if [ -f ${CONFIG} ]; then
+	source ${CONFIG}
+fi
 
 TFILE=/tmp/update-electrumx-banner-$$
 
@@ -34,7 +40,7 @@ fi
 cp ${BANNER}.template ${BANNER}.new
 
 # replace $TOR_VERSION in banner with actual tor version
-if [ -n "$TOR" ]; then
+if [ -n ${TOR} ]; then
 	TOR_VERSION=`$TOR --version | cut -f3,4 -d' '`
 	sed -i -e 's/\$TOR_VERSION/${TOR_VERSION%?}/g' ${BANNER}.new
 fi
