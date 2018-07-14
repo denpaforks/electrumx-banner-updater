@@ -40,9 +40,9 @@ fi
 cp ${BANNER}.template ${BANNER}.new
 
 # replace $TOR_VERSION in banner with actual tor version
-if [ -n ${TOR} ]; then
+if [ -n "${TOR}" ]; then
 	TOR_VERSION=`$TOR --version | cut -f3,4 -d' '`
-	sed -i -e 's/\$TOR_VERSION/${TOR_VERSION%?}/g' ${BANNER}.new
+	sed -i -e "s/\$TOR_VERSION/${TOR_VERSION%?}/g" ${BANNER}.new
 fi
 
 # electrum network status
