@@ -50,6 +50,7 @@ This script is working with the following software versions::
  ElectrumX:          1.2.1
  Bitcoin Core:       0.15.1
  Bitcoin ABC:        0.16.1
+ Tor:                0.3.3.9
 
 Live Example
 ------------
