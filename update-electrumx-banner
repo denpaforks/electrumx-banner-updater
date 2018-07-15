@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # update electrumx banner to report bitcoin memory pool, fees, height and time since last block
 # activate with cron job similar to this
@@ -26,7 +26,7 @@ TOR=
 NAME=`basename $0`
 CONFIG=/etc/${NAME}.conf
 if [ -f ${CONFIG} ]; then
-	source ${CONFIG}
+	. ${CONFIG}
 fi
 
 TFILE=`mktemp -t ${NAME}.XXXXXX`
@@ -61,7 +61,7 @@ printf "As of %s " "$(date -u)" >> ${BANNER}.new
 
 # mempool
 MEMPOOL=`${BITCOIN_CLI} -datadir=${BITCOIN_DATADIR} getmempoolinfo | grep size | grep -o '[0-9\.]*'`
-printf "there are %'d transactions in the memory pool\n" ${MEMPOOL} >> ${BANNER}.new
+printf "there are %d transactions in the memory pool\n" ${MEMPOOL} >> ${BANNER}.new
 
 # report last block and current height from electrumx journal
 journalctl --since "6 hours ago" -u electrumx -o short-iso --utc | grep Prefetcher:new | tail -n 1 > ${TFILE}
