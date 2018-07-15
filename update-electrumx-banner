@@ -23,13 +23,16 @@ RPC_PORT=8000
 # specify path to tor
 TOR=
 
-# location of config file
-CONFIG=/etc/update-electrumx-banner.conf
+NAME=`basename $0`
+CONFIG=/etc/${NAME}.conf
 if [ -f ${CONFIG} ]; then
 	source ${CONFIG}
 fi
 
-TFILE=/tmp/update-electrumx-banner-$$
+TFILE=`mktemp -t ${NAME}.XXXXXX`
+if [ $? -ne 0 ]; then
+	echo "${NAME}: Can't create temp file, exiting..."
+fi
 
 # save initial banner as template for creation of new banners
 if [ ! -f ${BANNER}.template ]; then
@@ -41,7 +44,7 @@ cp ${BANNER}.template ${BANNER}.new
 
 # replace $TOR_VERSION in banner with actual tor version
 if [ -n "${TOR}" ]; then
-	TOR_VERSION=`$TOR --version | cut -f3,4 -d' '`
+	TOR_VERSION=`${TOR} --version | cut -f3,4 -d' '`
 	sed -i -e "s/\$TOR_VERSION/${TOR_VERSION%?}/g" ${BANNER}.new
 fi
 
@@ -74,12 +77,12 @@ rm ${TFILE}
 
 # get exchange rate and average fee per satoshi
 if ${BITCOIN_CLI} --version | grep -q ABC; then
-        USDPERBTC=`curl -m 10 -L -s 'https://apiv2.bitcoinaverage.com/indices/global/ticker/BCHUSD' | python3 -c 'import sys, json; j=json.load(sys.stdin); print(j["last"])'`
-        TICKER=BCH
+		USDPERBTC=`curl -m 10 -L -s 'https://apiv2.bitcoinaverage.com/indices/global/ticker/BCHUSD' | python3 -c 'import sys, json; j=json.load(sys.stdin); print(j["last"])'`
+		TICKER=BCH
 		BYTESPERTX=226
 else
-        USDPERBTC=`curl -m 10 -L -s 'https://apiv2.bitcoinaverage.com/indices/global/ticker/BTCUSD' | python3 -c 'import sys, json; j=json.load(sys.stdin); print(j["last"])'`
-        TICKER=BTC
+		USDPERBTC=`curl -m 10 -L -s 'https://apiv2.bitcoinaverage.com/indices/global/ticker/BTCUSD' | python3 -c 'import sys, json; j=json.load(sys.stdin); print(j["last"])'`
+		TICKER=BTC
 		BYTESPERTX=168
 fi
 USDPERSAT=`echo ${USDPERBTC} | awk '{print $1/100000000}'`
@@ -89,11 +92,11 @@ echo "Current exchange rate = ${USDPERBTC} USD/${TICKER}; typical TX size = ${BY
 # report fees for various block times
 for BLOCKS in 2 6 12 24 144 288 504 1008
 do
-        SATPERBYTE=`${BITCOIN_CLI} -datadir=${BITCOIN_DATADIR} estimatesmartfee ${BLOCKS} | grep feerate  | grep -o '[0-9\.\-]*' | awk '{print $1*100000+0.5}'`
-        if [ `echo ${SATPERBYTE} | awk '{print int($1)}'` -lt 1 ]; then
-                break;
-        fi
-        echo ${BLOCKS} ${SATPERBYTE} ${BYTESPERTX} ${USDPERSAT} | awk '{printf "Estimated miner fee for confirmation in %d blocks (%s hours) = %d sat/B (%d sat or $%0.2f)\n", $1, int($1/0.06)/100, $2, $2*$3, $2*$3*$4 }' >> ${BANNER}.new
+		SATPERBYTE=`${BITCOIN_CLI} -datadir=${BITCOIN_DATADIR} estimatesmartfee ${BLOCKS} | grep feerate  | grep -o '[0-9\.\-]*' | awk '{print $1*100000+0.5}'`
+		if [ `echo ${SATPERBYTE} | awk '{print int($1)}'` -lt 1 ]; then
+				break;
+		fi
+		echo ${BLOCKS} ${SATPERBYTE} ${BYTESPERTX} ${USDPERSAT} | awk '{printf "Estimated miner fee for confirmation in %d blocks (%s hours) = %d sat/B (%d sat or $%0.2f)\n", $1, int($1/0.06)/100, $2, $2*$3, $2*$3*$4 }' >> ${BANNER}.new
 done
 
 # save backup of original banner on first run (just in case...)
