@@ -91,13 +91,13 @@ echo "Current exchange rate = ${USDPERBTC} USD/${TICKER}; typical TX size = ${BY
 # report fees for various block times
 for BLOCKS in 2 6 12 24 144 288 504 1008
 do
-        SATPERBYTE=`${BITCOIN_CLI} -datadir=${BITCOIN_DATADIR} estimatesmartfee ${BLOCKS} | grep feerate  | grep -o '[0-9\.\-]*' | awk '{print $1*100000+0.5}'`
-        # do not elstimate futher block times once fee reaches 1 sat/B
-        if [ -n "${INTSATPERBYTE}" ] && [ "${INTSATPERBYTE}" -le 1 ]; then
-                break;
-        fi
-        INTSATPERBYTE=`echo ${SATPERBYTE} | awk '{print int($1)}'`;
-		echo ${BLOCKS} ${SATPERBYTE} ${BYTESPERTX} ${USDPERSAT} | awk '{printf "Estimated miner fee for confirmation in %d blocks (%s hours) = %d sat/B (%d sat or $%0.2f)\n", $1, int($1/0.06)/100, $2, $2*$3, $2*$3*$4 }' >> ${BANNER}.new
+	SATPERBYTE=`${BITCOIN_CLI} -datadir=${BITCOIN_DATADIR} estimatesmartfee ${BLOCKS} | grep feerate  | grep -o '[0-9\.\-]*' | awk '{print $1*100000+0.5}'`
+	# do not elstimate futher block times once fee reaches 1 sat/B
+	if [ -n "${INTSATPERBYTE}" ] && [ "${INTSATPERBYTE}" -le 1 ]; then
+		break;
+	fi
+	INTSATPERBYTE=`echo ${SATPERBYTE} | awk '{print int($1)}'`;
+	echo ${BLOCKS} ${SATPERBYTE} ${BYTESPERTX} ${USDPERSAT} | awk '{printf "Estimated miner fee for confirmation in %d blocks (%s hours) = %d sat/B (%d sat or $%0.2f)\n", $1, int($1/0.06)/100, $2, $2*$3, $2*$3*$4 }' >> ${BANNER}.new
 done
 
 # save backup of original banner on first run (just in case...)
