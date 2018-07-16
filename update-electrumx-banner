@@ -77,15 +77,13 @@ fi
 rm ${TFILE}
 
 # get exchange rate and average fee per satoshi
+TICKER=BTC
+BYTESPERTX=168
 if ${BITCOIN_CLI} --version | grep -q ABC; then
-	USDPERBTC=`curl -m 10 -L -s 'https://apiv2.bitcoinaverage.com/indices/global/ticker/BCHUSD' | python3 -c 'import sys, json; j=json.load(sys.stdin); print(j["last"])'`
 	TICKER=BCH
 	BYTESPERTX=226
-else
-	USDPERBTC=`curl -m 10 -L -s 'https://apiv2.bitcoinaverage.com/indices/global/ticker/BTCUSD' | python3 -c 'import sys, json; j=json.load(sys.stdin); print(j["last"])'`
-	TICKER=BTC
-	BYTESPERTX=168
 fi
+USDPERBTC=`curl -m 10 -L -s "https://apiv2.bitcoinaverage.com/indices/global/ticker/${TICKER}USD" | python3 -c 'import sys, json; j=json.load(sys.stdin); print(j["last"])'`
 USDPERSAT=`echo ${USDPERBTC} | awk '{print $1/100000000}'`
 
 echo "Current exchange rate = ${USDPERBTC} USD/${TICKER}; typical TX size = ${BYTESPERTX} bytes" >> ${BANNER}.new
@@ -95,7 +93,7 @@ for BLOCKS in 2 6 12 24 144 288 504 1008
 do
 	SATPERBYTE=`${BITCOIN_CLI} -datadir=${BITCOIN_DATADIR} estimatesmartfee ${BLOCKS} | grep feerate  | grep -o '[0-9\.\-]*' | awk '{print $1*100000+0.5}'`
 	if [ `echo ${SATPERBYTE} | awk '{print int($1)}'` -lt 1 ]; then
-			break;
+		break;
 	fi
 	echo ${BLOCKS} ${SATPERBYTE} ${BYTESPERTX} ${USDPERSAT} | awk '{printf "Estimated miner fee for confirmation in %d blocks (%s hours) = %d sat/B (%d sat or $%0.2f)\n", $1, int($1/0.06)/100, $2, $2*$3, $2*$3*$4 }' >> ${BANNER}.new
 done
