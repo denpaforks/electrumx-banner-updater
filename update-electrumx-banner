@@ -23,6 +23,9 @@ RPC_PORT=8000
 # specify path to tor
 TOR=
 
+# specify date format
+DATE_FORMAT='%a %b %d %T %Z %Y'
+
 NAME=`basename $0`
 CONFIG=/etc/${NAME}.conf
 if [ -f ${CONFIG} ]; then
@@ -58,7 +61,7 @@ echo This server has ${mySessions} anonymous electrum connections. >> ${BANNER}.
 echo "" >> ${BANNER}.new
 
 # timestamp
-printf "As of %s " "$(date -u)" >> ${BANNER}.new
+printf "As of %s " "$(date +"$DATE_FORMAT" -u)" >> ${BANNER}.new
 
 # mempool
 MEMPOOL=`${BITCOIN_CLI} -datadir=${BITCOIN_DATADIR} getmempoolinfo | grep size | grep -o '[0-9\.]*'`
