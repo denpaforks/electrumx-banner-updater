@@ -63,7 +63,7 @@ startDate=`date +"$DATE_FORMAT" -ud "${uptimeDiff}"`
 
 echo There are currently ${goodPeers} public electrum servers. >> ${BANNER}.new
 echo This server has ${mySessions} anonymous electrum connections. >> ${BANNER}.new
-echo ${txsSent} transactions was broadcasted since ${startDate}. >> ${BANNER}.new
+echo ${txsSent} transactions were broadcasted since ${startDate}. >> ${BANNER}.new
 echo "" >> ${BANNER}.new
 
 # timestamp
