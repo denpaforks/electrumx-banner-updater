@@ -52,7 +52,7 @@ if [ -n "${TOR}" ]; then
 	sed -i -e "s/\$TOR_VERSION/${TOR_VERSION%?}/g" ${BANNER}.new
 fi
 
-UPTIME_PATTERN='s/\"//g;s/([0-9]{1,2})h/-\1 hours/g;s/([0-9]{1,2})m/-\1 minutes/g;s/([0-9]{1,2})s/-\1 seconds/g'
+UPTIME_PATTERN='s/\"//g;s/([0-9]*)d/-\1 days/g;s/([0-9]{1,2})h/-\1 hours/g;s/([0-9]{1,2})m/-\1 minutes/g;s/([0-9]{1,2})s/-\1 seconds/g'
 # electrum network status
 ${ELECTRUMX_RPC} getinfo > $TFILE
 mySessions=`grep sessions $TFILE | grep -o '[0-9]*'`
