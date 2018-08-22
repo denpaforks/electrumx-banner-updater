@@ -59,7 +59,7 @@ mySessions=`grep sessions $TFILE | grep -o '[0-9]*'`
 goodPeers=`grep good $TFILE | grep -o '[0-9]*'`
 txsSent=`grep txs_sent $TFILE | grep -o '[0-9]*'`
 uptimeDiff=`grep uptime $TFILE | grep -o '"[0-9dhms ]*"' | sed -E "$UPTIME_PATTERN"`
-startDate=`date +"$DATE_FORMAT" -d "${uptimeDiff}"`
+startDate=`date +"$DATE_FORMAT" -ud "${uptimeDiff}"`
 
 echo There are currently ${goodPeers} public electrum servers. >> ${BANNER}.new
 echo This server has ${mySessions} anonymous electrum connections. >> ${BANNER}.new
