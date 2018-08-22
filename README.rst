@@ -58,6 +58,9 @@ Live Example
 You can see an example here: 
     http://vps.hsmiths.com:49001/banner
 
+Note
+------------
+This fork is deployed on `bitcoin.corgi.party` and `corgicoqttibeewf.onion` electrumx servers.
 
 =======================================================
 
