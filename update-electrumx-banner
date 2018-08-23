@@ -116,7 +116,7 @@ do
 
 	SATPERBYTE=`echo ${FEERATE} | awk '{print $1*100000}'`
 	# do not estimate further block times once fee reaches 1 sat/B
-	if [ -n "${INTSATPERBYTE}" ] && [ "${INTSATPERBYTE}" -le 10 ]; then
+	if [ -n "${INTSATPERBYTE}" ] && [ "${INTSATPERBYTE}" -le 1 ]; then
 		break;
 	fi
 	INTSATPERBYTE=`echo ${SATPERBYTE} | awk '{print int($1*10)}'`;
