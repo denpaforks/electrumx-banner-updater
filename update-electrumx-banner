@@ -96,7 +96,7 @@ VERSION=`${BITCOIN_CLI} --version`
 if echo ${VERSION} | grep -q ABC; then
 	TICKER=BCH
 	BYTESPERTX=226
-else if echo ${VERSION} | grep -q Dash; then
+elif echo ${VERSION} | grep -q Dash; then
 	TICKER=DASH
 	BYTESPERTX=226
 	SYMBOLSET=local
