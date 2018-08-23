@@ -60,7 +60,7 @@ txsSent=`grep txs_sent $TFILE | grep -o '[0-9]*'`
 
 # server start date
 serverPid=`grep pid $TFILE | grep -o '[0-9]*'`
-startDate=`ps -eo pid,lstart | grep ${serverPid} | cut -f2-6 -d" "`
+startDate=`ps -eo pid,lstart | grep ${serverPid} | cut -f2-6 -d' '`
 fmtStartDate=`date +"$DATE_FORMAT" -ud "$(date -d "${startDate}")"`
 
 echo There are currently ${goodPeers} public electrum servers. >> ${BANNER}.new
