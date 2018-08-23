@@ -52,18 +52,20 @@ if [ -n "${TOR}" ]; then
 	sed -i -e "s/\$TOR_VERSION/${TOR_VERSION%?}/g" ${BANNER}.new
 fi
 
-UPTIME_PATTERN='s/\"//g;s/([0-9]*)d/-\1 days/g;s/([0-9]{1,2})h/-\1 hours/g;s/([0-9]{1,2})m/-\1 minutes/g;s/([0-9]{1,2})s/-\1 seconds/g'
 # electrum network status
 ${ELECTRUMX_RPC} getinfo > $TFILE
 mySessions=`grep sessions $TFILE | grep -o '[0-9]*'`
 goodPeers=`grep good $TFILE | grep -o '[0-9]*'`
 txsSent=`grep txs_sent $TFILE | grep -o '[0-9]*'`
-uptimeDiff=`grep uptime $TFILE | grep -o '"[0-9dhms ]*"' | sed -E "$UPTIME_PATTERN"`
-startDate=`date +"$DATE_FORMAT" -ud "${uptimeDiff}"`
+
+# server start date
+serverPid=`grep pid $TFILE | grep -o '[0-9]*'`
+startDate=`ps -eo pid,lstart | grep ${serverPid} | cut -f2-6 -d" "`
+fmtStartDate=`date +"$DATE_FORMAT" -ud "$(date -d "${startDate}")"`
 
 echo There are currently ${goodPeers} public electrum servers. >> ${BANNER}.new
 echo This server has ${mySessions} anonymous electrum connections. >> ${BANNER}.new
-echo ${txsSent} transactions were broadcasted since ${startDate}. >> ${BANNER}.new
+echo ${txsSent} transactions were broadcasted since ${fmtStartDate}. >> ${BANNER}.new
 echo "" >> ${BANNER}.new
 
 # timestamp
