@@ -90,11 +90,19 @@ rm ${TFILE}
 # get exchange rate and average fee per satoshi
 TICKER=BTC
 BYTESPERTX=168
-if ${BITCOIN_CLI} --version | grep -q ABC; then
+SYMBOLSET=global
+
+VERSION=`${BITCOIN_CLI} --version`
+if echo ${VERSION} | grep -q ABC; then
 	TICKER=BCH
 	BYTESPERTX=226
+else if echo ${VERSION} | grep -q Dash; then
+	TICKER=DASH
+	BYTESPERTX=226
+	SYMBOLSET=local
 fi
-USDPERBTC=`curl -m 10 -L -s "https://apiv2.bitcoinaverage.com/indices/global/ticker/${TICKER}USD" | grep last | grep -o "[0-9.]*"`
+
+USDPERBTC=`curl -m 10 -L -s "https://apiv2.bitcoinaverage.com/indices/${SYMBOLSET}/ticker/${TICKER}USD" | grep last | grep -o "[0-9.]*"`
 USDPERSAT=`echo ${USDPERBTC} | awk '{print $1/100000000}'`
 
 echo "Current exchange rate = ${USDPERBTC} USD/${TICKER}; typical TX size = ${BYTESPERTX} bytes" >> ${BANNER}.new
