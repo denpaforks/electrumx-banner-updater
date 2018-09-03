@@ -28,9 +28,7 @@ DATE_FORMAT='%a %b %d %T %Z %Y'
 
 NAME=`basename $0`
 CONFIG=/etc/${NAME}.conf
-if [ -f ${CONFIG} ]; then
-	. ${CONFIG}
-fi
+[ -f ${CONFIG} ] && . ${CONFIG}
 
 TFILE=`mktemp -t ${NAME}.XXXXXX`
 if [ $? -ne 0 ]; then
@@ -39,9 +37,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # save initial banner as template for creation of new banners
-if [ ! -f ${BANNER}.template ]; then
-	cp ${BANNER} ${BANNER}.template
-fi
+[ ! -f ${BANNER}.template ] && cp ${BANNER} ${BANNER}.template
 
 # create new banner from template
 cp ${BANNER}.template ${BANNER}.new
@@ -116,17 +112,13 @@ do
 
 	SATPERBYTE=`echo ${FEERATE} | awk '{print $1*100000+0.5}'`
 	# do not estimate further block times once fee reaches 1 sat/B
-	if [ -n "${INTSATPERBYTE}" ] && [ "${INTSATPERBYTE}" -le 1 ]; then
-		break;
-	fi
-	INTSATPERBYTE=`echo ${SATPERBYTE} | awk '{print int($1)}'`;
+	[ -n "${INTSATPERBYTE}" ] && [ "${INTSATPERBYTE}" -le 1 ] && break
+	INTSATPERBYTE=`echo ${SATPERBYTE} | awk '{print int($1)}'`
 	echo ${BLOCKS} ${SATPERBYTE} ${BYTESPERTX} ${USDPERSAT} | awk '{printf "Estimated miner fee for confirmation in %d blocks (%s hours) = %d sat/B (%d sat or $%0.2f)\n", $1, int($1/0.06)/100, $2, $2*$3, $2*$3*$4 }' >> ${BANNER}.new
 done
 
 # save backup of original banner on first run (just in case...)
-if [ ! -f ${BANNER}.backup ]; then
-	cp ${BANNER} ${BANNER}.backup
-fi
+[ ! -f ${BANNER}.backup ] && cp ${BANNER} ${BANNER}.backup
 
 # replace banner with newly generated version
 mv ${BANNER}.new ${BANNER}
